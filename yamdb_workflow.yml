@@ -43,8 +43,7 @@ jobs:
         uses: docker/build-push-action@v2 
         with:
           push: true
-          tags: cocosi383/yamdb:latest
-          fiale: api_yamdb/Dockerfile
+          tags: cocosi383/yamdb_final:latest
 
   deploy:
     runs-on: ubuntu-latest
