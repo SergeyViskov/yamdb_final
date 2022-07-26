@@ -17,7 +17,7 @@ services:
       - ./.env
 
   web:
-    image: SergeyViskov/yamdb:latest
+    image: SergeyViskov/yamdb_final:latest
     restart: always
     volumes:
 
