@@ -6,46 +6,86 @@
 Благодарные или возмущённые читатели оставляют к произведениям текстовые отзывы (Review) и выставляют произведению рейтинг.
 
 
-# Ресурсы API YaMDb
-**AUTH**: аутентификация.
+### Как запустить проект:
 
-**USERS**: пользователи.
-
-**TITLES**: произведения, к которым пишут отзывы (определённый фильм, книга или песенка).
-
-**CATEGORIES**: категории (типы) произведений ("Фильмы", "Книги", "Музыка").
-
-**GENRES**: жанры произведений. Одно произведение может быть привязано к нескольким жанрам.
-
-**REVIEWS**: отзывы на произведения. Отзыв привязан к определённому произведению.
-
-**COMMENTS**: комментарии к отзывам. Комментарий привязан к определённому отзыву.
-
-# Алгоритм регистрации пользователей
-Пользователь отправляет POST-запрос с параметром email на `/api/v1/auth/email/`.
-YaMDB отправляет письмо с кодом подтверждения (confirmation_code) на адрес email (функция в разработке).
-Пользователь отправляет POST-запрос с параметрами email и confirmation_code на `/api/v1/auth/token/`, в ответе на запрос ему приходит token (JWT-токен).
-Эти операции выполняются один раз, при регистрации пользователя. В результате пользователь получает токен и может работать с API, отправляя этот токен с каждым запросом.
-
-# Пользовательские роли
-**Аноним** — может просматривать описания произведений, читать отзывы и комментарии.
-
-**Аутентифицированный пользователь (user)** — может читать всё, как и Аноним, дополнительно может публиковать отзывы и ставить рейтинг произведениям (фильмам/книгам/песенкам), может комментировать чужие отзывы и ставить им оценки; может редактировать и удалять свои отзывы и комментарии.
-
-**Модератор (moderator)** — те же права, что и у Аутентифицированного пользователя плюс право удалять и редактировать любые отзывы и комментарии.
-
-**Администратор (admin)** — полные права на управление проектом и всем его содержимым. Может создавать и удалять произведения, категории и жанры. Может назначать роли пользователям.
-
-**Администратор Django** — те же права, что и у роли Администратор.
-
-# Установка
-Склонируйте репозиторий. Находясь в папке с кодом создайте виртуальное окружение `python -m venv venv`, активируйте его (Windows: `source venv\scripts\activate`; Linux/Mac: `sorce venv/bin/activate`), установите зависимости `python -m pip install -r requirements.txt`.
-
-Для запуска сервера разработки,  находясь в директории проекта выполните команды:
-```
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
+Клонируем репозиторий и переходим в него:
+```bash
+git clone https://github.com/SergeyViskov/infra_sp2
+cd yamdb_final
+cd api_yamdb
 ```
 
-Проект запущен и доступен по адресу [localhost:8000](http://localhost:8000/).
+Создаем и активируем виртуальное окружение:
+```bash
+python3 -m venv venv
+source /venv/Scripts/activate - для Windows (source /venv/bin/activate - для Linux)
+python -m pip install --upgrade pip
+```
+
+Ставим зависимости из requirements.txt:
+```bash
+pip install -r requirements.txt
+```
+
+Переходим в папку с файлом docker-compose.yaml:
+```bash
+cd infra
+```
+
+Поднимаем контейнеры (infra_db_1, infra_web_1, infra_nginx_1):
+```bash
+docker-compose up -d --build
+```
+
+Выполняем миграции:
+```bash
+docker-compose exec web python manage.py makemigrations reviews
+```
+```bash
+docker-compose exec web python manage.py migrate
+```
+
+Создаем суперпользователя:
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+Србираем статику:
+```bash
+docker-compose exec web python manage.py collectstatic --no-input
+```
+
+Создаем дамп базы данных:
+```bash
+docker-compose exec web python manage.py dumpdata > dumpPostrgeSQL.json
+```
+
+Заполняем базы данных:
+```bash
+docker-compose run web python manage.py loaddata fixtures.json
+```
+
+Останавливаем контейнеры:
+```bash
+docker-compose down -v
+```
+
+### Шаблон наполнения .env расположенный по пути infra/.env
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+```
+
+### Документация API YaMDb
+Документация доступна по эндпойнту: http://localhost/redoc/
+
+
+### Об авторе:
+
+Висков Сергей Николаевич
+
+Ученик Яндекс-практикума, когорта №9 +
