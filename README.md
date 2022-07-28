@@ -10,7 +10,7 @@
 
 Клонируем репозиторий и переходим в него:
 ```bash
-git clone https://github.com/SergeyViskov/infra_sp2
+git clone https://github.com/SergeyViskov/yamdb_final
 cd yamdb_final
 cd api_yamdb
 ```
