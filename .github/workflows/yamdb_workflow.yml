@@ -54,10 +54,11 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
+        stack_file_name: docker-compose.yaml
         script: |
           sudo docker pull cocosi383/yamdb_final:latest
-          sudo `which docker-compose` stop $(sudo docker ps -a -q)
-          sudo `which docker-compose` rm web
+          sudo docker-compose stop
+          sudo docker-compose rm web
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -65,7 +66,7 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          sudo `which docker-compose` up -d
+          sudo docker-compose up -d --bild
   
   send_message:
     runs-on: ubuntu-latest
