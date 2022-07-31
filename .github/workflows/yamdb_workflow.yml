@@ -57,11 +57,11 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker pull cocosi383/yamdb_final:latest
-          sudo docker compose up -d --build
-          sudo docker compose exec -T web python manage.py makemigrations reviews --noinput
-          sudo docker compose exec -T web python manage.py makemigrations --noinput
-          sudo docker compose exec -T web python manage.py migrate --noinput 
-          sudo docker compose exec -T web python manage.py collectstatic --no-input
+          docker compose up -d --build
+          docker compose exec -T web python manage.py makemigrations reviews --noinput
+          docker compose exec -T web python manage.py makemigrations --noinput
+          docker compose exec -T web python manage.py migrate --noinput 
+          docker compose exec -T web python manage.py collectstatic --no-input
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
