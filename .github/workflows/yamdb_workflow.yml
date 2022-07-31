@@ -57,6 +57,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker pull cocosi383/yamdb_final:latest
+          sudo docker compose up -d --build
           sudo docker compose exec -T web python manage.py makemigrations reviews --noinput
           sudo docker compose exec -T web python manage.py makemigrations --noinput
           sudo docker compose exec -T web python manage.py migrate --noinput 
