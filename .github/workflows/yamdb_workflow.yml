@@ -43,10 +43,10 @@ jobs:
           tags: cocosi383/yamdb_final:latest
           file: api_yamdb/Dockerfile
 
-  copy:
-    name: Copy docker-compose, start.sh to VM
+  deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
+    if: success() && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@master
       - name: copy file via ssh password
@@ -55,30 +55,21 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          source: "docker-compose.yaml,start.sh"
-          target: "yamdb_final"
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: copy
-    steps:
-    - name: executing remote ssh commands to deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.PASSPHRASE }}
-        script: |
-          sudo systemctl start docker
-          sudo systemctl enable docker
-          cd ./yamdb_final/
-          sudo docker pull cocosi383/yamdb_final:latest
-          sudo docker-compose down -v
-          sudo docker-compose pull
-          sudo docker-compose up -d
-          ./start.sh
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          source: "docker-compose.yaml,nginx.conf,.env"
+          target: "/srv/yamdb_final/"
+          overwrite: "true"
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          script: |
+            cd /srv/yamdb_final/
+            sudo docker-compose stop
+            sudo docker image rm cocosi383/yamdb_final:latest
+            sudo docker-compose up -d
   
   send_message:
     runs-on: ubuntu-latest
