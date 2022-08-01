@@ -55,7 +55,6 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          stack_file_name: docker-compose.yaml
           script: |
             sudo docker pull cocosi383/yamdb_final:latest
             # Создаст файл для переменных окружения
@@ -68,7 +67,6 @@ jobs:
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker-compose down -v
-            sudo docker image prune -af
             sudo docker-compose up -d
             sudo docker-compose exec -T web python manage.py makemigrations reviews
             sudo docker-compose exec -T web python manage.py migrate
